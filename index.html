@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ระบบประเมินสุขภาพจิตและอารมณ์ (ราชทัณฑ์)</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    :root { --brand-from:#0ea5e9; --brand-to:#2563eb; }
+    *{font-family:Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Helvetica Neue, Arial, "Apple Color Emoji","Segoe UI Emoji"}
+    .glass{backdrop-filter: blur(10px); background:rgba(255,255,255,.7)}
+    .brand-grad{background-image:linear-gradient(135deg,var(--brand-from),var(--brand-to));}
+    .sparkle{position:relative}
+    .sparkle:after{content:"";position:absolute;inset:-2px;pointer-events:none;background:radial-gradient(closest-side,rgba(255,255,255,.7),transparent 70%);opacity:.3;filter:blur(6px)}
+    .btn{transition:.2s ease;}
+    .btn:hover{transform:translateY(-1px);}
+    .shadow-soft{box-shadow:0 10px 25px rgba(2,6,23,.08)}
+    .card{border-radius:1rem; box-shadow:0 10px 30px rgba(2,6,23,.08)}
+    .pill{border-radius:9999px}
+    .hidden-el{display:none}
+    .mood-btn[aria-pressed="true"]{outline:2px solid rgba(59,130,246,.5); box-shadow:0 0 0 3px rgba(59,130,246,.15) inset}
+    .option-chip{border:1px solid rgba(2,6,23,.06)}
+    .modal-backdrop{background:rgba(2,6,23,.55)}
+  </style>
+</head>
+<body class="min-h-screen bg-slate-50 text-slate-800">
+  <!-- TOP BAR -->
+  <header class="brand-grad text-white">
+    <div class="max-w-6xl mx-auto px-6 py-5 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-2xl bg-white/20 grid place-items-center shadow-soft">
+          <svg viewBox="0 0 24 24" class="w-6 h-6"><path fill="currentColor" d="M12 2a9 9 0 0 0-9 9c0 5.25 4.5 9 9 11c4.5-2 9-5.75 9-11a9 9 0 0 0-9-9m0 4a3 3 0 0 1 3 3c0 1.66-1.34 3-3 3s-3-1.34-3-3a3 3 0 0 1 3-3Z"/></svg>
+        </div>
+        <h1 class="text-xl sm:text-2xl font-semibold">ระบบประเมินสุขภาพจิตและอารมณ์ (ราชทัณฑ์)</h1>
+      </div>
+      <div id="userBadge" class="text-white/90 text-sm"></div>
+    </div>
+  </header>
+
+  <!-- APP WRAPPER -->
+  <main class="max-w-6xl mx-auto p-6 -mt-8">
+    <!-- LOGIN CARD -->
+    <section id="loginCard" class="card glass p-6 sm:p-8 bg-white">
+      <div class="flex items-start justify-between">
+        <div>
+          <h2 class="text-2xl font-bold">เข้าสู่ระบบเจ้าหน้าที่</h2>
+          <p class="text-slate-600 mt-1">กรุณาเข้าสู่ระบบเพื่อใช้งาน</p>
+        </div>
+        <div class="text-sm text-slate-500">เวอร์ชัน: SPA / Local only</div>
+      </div>
+      <div class="grid sm:grid-cols-2 gap-4 mt-6">
+        <div>
+          <label class="block text-sm mb-2">Username</label>
+          <input id="username" class="w-full rounded-xl border border-slate-200 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-400" placeholder="กรอก Username" />
+        </div>
+        <div>
+          <label class="block text-sm mb-2">Password</label>
+          <input id="password" type="password" class="w-full rounded-xl border border-slate-200 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-400" placeholder="กรอก Password" />
+        </div>
+      </div>
+      <div class="mt-6 flex items-center gap-3">
+        <button id="btnLogin" class="btn pill px-5 py-3 bg-blue-600 text-white hover:bg-blue-700 shadow-soft">เข้าสู่ระบบ</button>
+        <span class="text-slate-500 text-sm">* สำหรับเดโม่ (ออฟไลน์)</span>
+      </div>
+    </section>
+
+    <!-- APP BODY -->
+    <section id="appBody" class="hidden-el">
+      <!-- NAV TABS -->
+      <nav class="mt-3 grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <button data-tab="mood" class="tab btn card p-4 text-left bg-white hover:bg-slate-50">
+          <div class="flex items-center gap-3">
+            <span class="pill px-3 py-1 bg-blue-50 text-blue-700 text-xs">ฟังก์ชัน 1</span>
+            <h3 class="font-semibold">ระบบประเมินอารมณ์</h3>
+          </div>
+          <p class="text-slate-600 mt-1 text-sm">เลือกอารมณ์ 6 แบบ บันทึกหลังเยี่ยมญาติ / ประจำวัน</p>
+        </button>
+        <button data-tab="pmhq" class="tab btn card p-4 text-left bg-white hover:bg-slate-50">
+          <div class="flex items-center gap-3">
+            <span class="pill px-3 py-1 bg-violet-50 text-violet-700 text-xs">ฟังก์ชัน 2</span>
+            <h3 class="font-semibold">แบบฟอร์มประเมินดิจิทัล (PMHQ)</h3>
+          </div>
+          <p class="text-slate-600 mt-1 text-sm">ประเมิน 24 ข้อ ออกรวมคะแนนและผลลัพธ์อัตโนมัติ</p>
+        </button>
+        <button data-tab="reports" class="tab btn card p-4 text-left bg-white hover:bg-slate-50">
+          <div class="flex items-center gap-3">
+            <span class="pill px-3 py-1 bg-emerald-50 text-emerald-700 text-xs">ฟังก์ชัน 3</span>
+            <h3 class="font-semibold">รายงานผลดิจิทัล & Dashboard</h3>
+          </div>
+          <p class="text-slate-600 mt-1 text-sm">สรุปข้อมูลจาก 2 ระบบ พร้อมกราฟ</p>
+        </button>
+      </nav>
+
+      <!-- TAB: MOOD -->
+      <section id="tab-mood" class="card bg-white p-6 sm:p-8 mt-6">
+        <h3 class="text-xl font-semibold">ระบบประเมินอารมณ์</h3>
+        <p class="text-slate-600 mt-1">โปรดกรอกเลขประจำตัวผู้ต้องขังเพื่อดึงชื่อ แล้วเลือกอารมณ์</p>
+
+        <div class="grid sm:grid-cols-3 gap-4 mt-6">
+          <div class="sm:col-span-1">
+            <label class="block text-sm mb-2">เลขประจำตัวผู้ต้องขัง</label>
+            <input id="moodPid" class="w-full rounded-xl border border-slate-200 px-4 py-3 focus:ring-2 focus:ring-blue-400" placeholder="เช่น 6810100001"/>
+          </div>
+          <div class="sm:col-span-2">
+            <label class="block text-sm mb-2">ชื่อผู้ต้องขัง</label>
+            <input id="moodName" disabled class="w-full rounded-xl bg-slate-50 border border-slate-200 px-4 py-3" placeholder="—"/>
+          </div>
+        </div>
+
+        <div class="mt-4">
+          <span class="block text-sm mb-2">ช่วงการประเมิน</span>
+          <div class="flex flex-wrap gap-2">
+            <button class="option-chip pill px-3 py-2 bg-white hover:bg-slate-50" data-mctx="หลังเยี่ยมญาติ">หลังเยี่ยมญาติ</button>
+            <button class="option-chip pill px-3 py-2 bg-white hover:bg-slate-50" data-mctx="ประจำวัน">ประจำวัน</button>
+          </div>
+        </div>
+
+        <div class="mt-6">
+          <span class="block text-sm mb-3">เลือกอารมณ์</span>
+          <div id="moodButtons" class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+            <!-- buttons injected by JS -->
+          </div>
+        </div>
+
+        <div class="mt-6 flex items-center gap-3">
+          <button id="saveMood" class="btn pill px-5 py-3 bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-40">บันทึกอารมณ์</button>
+          <span class="text-slate-500 text-sm">จะถูกเก็บในเบราว์เซอร์ (Local)</span>
+        </div>
+      </section>
+
+      <!-- TAB: PMHQ -->
+      <section id="tab-pmhq" class="card bg-white p-6 sm:p-8 mt-6">
+        <div class="flex items-center justify-between">
+          <div>
+            <h3 class="text-xl font-semibold">แบบฟอร์มประเมินดิจิทัล (PMHQ – Thai)</h3>
+            <p class="text-slate-600 mt-1">24 ข้อ: 0=ไม่เลย, 1=บางครั้ง, 2=ค่อนข้างบ่อย, 3=บ่อยมาก</p>
+          </div>
+          <div id="pmhqScoreBadge" class="pill px-3 py-2 text-sm bg-slate-100 text-slate-700">คะแนนรวม: 0</div>
+        </div>
+
+        <div class="grid sm:grid-cols-3 gap-4 mt-6">
+          <div class="sm:col-span-1">
+            <label class="block text-sm mb-2">เลขประจำตัวผู้ต้องขัง</label>
+            <input id="pmhqPid" class="w-full rounded-xl border border-slate-200 px-4 py-3 focus:ring-2 focus:ring-violet-400" placeholder="เช่น 6810100001"/>
+          </div>
+          <div class="sm:col-span-2">
+            <label class="block text-sm mb-2">ชื่อผู้ต้องขัง</label>
+            <input id="pmhqName" disabled class="w-full rounded-xl bg-slate-50 border border-slate-200 px-4 py-3" placeholder="—"/>
+          </div>
+        </div>
+
+        <form id="pmhqForm" class="mt-6 grid gap-4">
+          <!-- Questions injected by JS -->
+        </form>
+
+        <div class="mt-6 flex items-center gap-3">
+          <button id="submitPMHQ" class="btn pill px-5 py-3 bg-violet-600 text-white hover:bg-violet-700 disabled:opacity-40">ส่งแบบประเมิน</button>
+          <span class="text-slate-500 text-sm">จะแสดงผลลัพธ์และบันทึกข้อมูล</span>
+        </div>
+      </section>
+
+      <!-- TAB: REPORTS -->
+      <section id="tab-reports" class="card bg-white p-6 sm:p-8 mt-6">
+        <div class="flex items-center justify-between">
+          <h3 class="text-xl font-semibold">รายงานผลดิจิทัล & Dashboard</h3>
+          <div class="flex items-center gap-2 text-sm">
+            <button id="clearAll" class="pill px-3 py-2 bg-rose-50 text-rose-700 hover:bg-rose-100">ล้างข้อมูลทั้งหมด</button>
+          </div>
+        </div>
+
+        <div class="grid md:grid-cols-3 gap-4 mt-6">
+          <div class="p-4 rounded-2xl bg-slate-50">
+            <div class="text-xs text-slate-500">จำนวนบันทึกอารมณ์</div>
+            <div id="statMoodCount" class="text-2xl font-semibold">0</div>
+          </div>
+          <div class="p-4 rounded-2xl bg-slate-50">
+            <div class="text-xs text-slate-500">จำนวนแบบประเมิน PMHQ</div>
+            <div id="statPMHQCount" class="text-2xl font-semibold">0</div>
+          </div>
+          <div class="p-4 rounded-2xl bg-slate-50">
+            <div class="text-xs text-slate-500">สัดส่วน PMHQ มีปัญหา</div>
+            <div id="statPMHQRate" class="text-2xl font-semibold">0%</div>
+          </div>
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-6 mt-6">
+          <div class="p-4 rounded-2xl bg-slate-50">
+            <h4 class="font-semibold mb-2">สรุปอารมณ์ล่าสุด (10 รายการ)</h4>
+            <div id="recentMood" class="space-y-2 text-sm"></div>
+          </div>
+          <div class="p-4 rounded-2xl bg-slate-50">
+            <h4 class="font-semibold mb-2">สรุป PMHQ ล่าสุด (10 รายการ)</h4>
+            <div id="recentPMHQ" class="space-y-2 text-sm"></div>
+          </div>
+        </div>
+
+        <div class="mt-6 grid md:grid-cols-2 gap-6">
+          <div class="p-4 rounded-2xl bg-white border border-slate-200">
+            <h4 class="font-semibold mb-2">กราฟสัดส่วนอารมณ์</h4>
+            <div id="chartMood" class="h-56 grid content-end gap-2" aria-label="Bar chart mood"></div>
+          </div>
+          <div class="p-4 rounded-2xl bg-white border border-slate-200">
+            <h4 class="font-semibold mb-2">การกระจายคะแนน PMHQ</h4>
+            <div id="chartPMHQ" class="h-56 grid content-end gap-2" aria-label="Bar chart pmhq"></div>
+          </div>
+        </div>
+      </section>
+    </section>
+  </main>
+
+  <!-- MODAL -->
+  <div id="modal" class="fixed inset-0 hidden-el items-center justify-center z-50">
+    <div class="absolute inset-0 modal-backdrop"></div>
+    <div class="relative w-[92%] max-w-md card bg-white p-6">
+      <div class="flex items-start justify-between">
+        <h4 id="modalTitle" class="text-lg font-semibold">แจ้งเตือน</h4>
+        <button id="closeModal" class="pill px-3 py-1 bg-slate-100 hover:bg-slate-200">ปิด</button>
+      </div>
+      <p id="modalMsg" class="mt-3 text-slate-700"></p>
+    </div>
+  </div>
+
+  <script>
+    // ------- Static datasets -------
+    const USERS = { username: 'StaffPrisoners', password: '112233' };
+    const INMATES = {
+      '6810100001': 'นายสมเกียรติ วังดี',
+      '6810100002': 'นายสีสา เกียรติ',
+      '6810100003': 'นายพหวังชา โสภณ',
+      '6810100004': 'นายรันย์ มงคล',
+      '6810100005': 'นายทราทิพย์ ศรีพันธ์',
+    };
+    const MOODS = [
+      { key:'ตื่นเต้น', emoji:'🤩' },
+      { key:'มีความสุข', emoji:'😊' },
+      { key:'เฉยๆ', emoji:'😐' },
+      { key:'เศร้า', emoji:'😢' },
+      { key:'กลัว', emoji:'😨' },
+      { key:'โกรธ', emoji:'😠' },
+    ];
+    const PMHQ_QUESTIONS = [
+      'คุณรู้สึกอยากร้อง หรือตะโกนดังๆ เพื่อระบายความอึดอัดคับแค้นใจ',
+      'คุณรู้สึกเศร้า เสียใจ จนทำให้คุณไม่มีความสุขกับการใช้ชีวิตในเรือนจำ',
+      'คุณรู้สึกน้อยใจ เสียใจ ในโชคชะตาของตนเองที่ต้องมาใช้ชีวิตอยู่ในเรือนจำ เช่นทุกวันนี้',
+      'คุณรู้สึกท้อแท้สิ้นหวังในชีวิต',
+      'ระยะนี้คุณเกิดความรู้สึกกลัว และหวาดระแวงการใช้ชีวิตในเรือนจำโดยไม่มีเหตุผล',
+      'คุณรู้สึกสูญเสียความเป็นตัวของตัวเอง',
+      'คุณรู้สึกว่าตนเองมักมีอาการกระวนกระวายหรือกระสับกระส่าย',
+      'พักนี้คุณรู้สึกปวดเมื่อยบริเวณต้นคอ หลังหรือไหล่มากกว่าปกติ',
+      'พักนี้คุณมีปัญหาเกี่ยวกับสุขภาพร่างกายหรือมีการเจ็บป่วย',
+      'ระยะนี้คุณรู้สึกเป็นห่วงและวิตกกังวลในเรื่องบางเรื่องมากกว่าปกติ',
+      'คุณรู้สึกว่าพักนี้คุณมักมีอารมณ์หงุดหงิดและโมโหง่ายกว่าปกติ',
+      'พักนี้คุณมักมีอาการปวดหัว เวียนหัว',
+      'ช่วงนี้คุณรู้สึกอ่อนเพลีย เหมือนคนไม่มีเรี่ยวแรง (ปกติไม่เคยเป็น)',
+      'พักนี้คุณรู้สึกไม่อยากพูดคุยหรือสุงสิงกับเพื่อนผู้ต้องขังอื่นๆ อยากอยู่เงียบๆ คนเดียว',
+      'พักนี้คุณมักมีปัญหาเกี่ยวกับการนอน เช่น นอนไม่หลับ หลับยาก หลับๆ ตื่นๆ ตื่นเร็ว/เช้ากว่าปกติ หรือตื่นขึ้นมาแล้วรู้สึกอ่อนเพลียเหมือนนอนไม่เต็มอิ่ม',
+      'ช่วงนี้คุณรู้สึกเพลียง่าย ไม่อยากทำอะไร อยากนอนอย่างเดียว',
+      'ระยะนี้คุณมักมีอาการจุกเสียด แน่นท้อง หรือท้องอืดท้องเฟ้อ',
+      'พักนี้คุณมักคิดวกไปวนมาแต่เรื่องเดิมๆ ที่ทำาให้คุณไม่สบายใจ แต่ก็ไม่สามารถหยุดคิดได้',
+      'พักนี้คุณมักมีอาการหลงลืมง่าย จนตนเองหรือเพื่อนผู้ต้องขังคนอื่นสังเกตเห็น',
+      'คุณรู้สึกว่าชีวิตของคุณมักมีแต่เรื่องไม่ดีเกิดขึ้น',
+      'พักนี้คุณรู้สึกเบื่อหน่ายกับการใช้ชีวิตอยู่ในเรือนจำจนไม่อยากมีชีวิตอยู่ต่อไป',
+      'คุณรู้สึกผิดอยู่ตลอดเวลา',
+      'พักนี้คุณมีปากเสียงกับผู้ต้องขังคนอื่นบ่อยกว่าปกติ',
+      'พักนี้คุณมักระบายออกโดยการทำให้ตนเองได้รับความเจ็บปวด เช่น ชกกำแพง กรีดแขน โขกศีรษะ',
+    ];
+
+    // ------- Helpers -------
+    const $ = (q)=>document.querySelector(q);
+    const $$ = (q)=>Array.from(document.querySelectorAll(q));
+
+    const storage = {
+      get moods(){ return JSON.parse(localStorage.getItem('moods')||'[]') },
+      set moods(v){ localStorage.setItem('moods', JSON.stringify(v)) },
+      get pmhq(){ return JSON.parse(localStorage.getItem('pmhq')||'[]') },
+      set pmhq(v){ localStorage.setItem('pmhq', JSON.stringify(v)) },
+      clear(){ localStorage.removeItem('moods'); localStorage.removeItem('pmhq'); }
+    }
+
+    function showModal(title,msg){
+      $('#modalTitle').textContent=title; $('#modalMsg').textContent=msg;
+      $('#modal').classList.remove('hidden-el');
+      $('#modal').classList.add('flex');
+    }
+    function hideModal(){ $('#modal').classList.add('hidden-el'); $('#modal').classList.remove('flex'); }
+
+    function findInmate(pid){ return INMATES[pid?.trim()] || null }
+
+    function fmtDate(ts){
+      const d = new Date(ts);
+      return d.toLocaleString('th-TH',{ dateStyle:'medium', timeStyle:'short' });
+    }
+
+    function classifyPMHQ(score){ return score >= 29 ? {label:'มีปัญหาสุขภาพจิต', color:'bg-rose-100 text-rose-700'} : {label:'สุขภาพจิตปกติ', color:'bg-emerald-100 text-emerald-700'} }
+
+    function selfCareTips(){
+      return [
+        'หายใจลึก ๆ ช้า ๆ 3–5 นาที เมื่อรู้สึกกังวล',
+        'จัดเวลานอนและตื่นให้สม่ำเสมอ ลดคาเฟอีนตอนเย็น',
+        'ออกกำลังกายเบา ๆ เช่น เดิน/ยืดเหยียด 10–15 นาที',
+        'บันทึกความรู้สึกวันละ 1 เรื่องที่ขอบคุณ',
+        'พูดคุยกับเจ้าหน้าที่/เพื่อนที่ไว้ใจเมื่อรู้สึกไม่ไหว',
+      ]
+    }
+
+    // ------- Auth -------
+    $('#btnLogin').addEventListener('click', ()=>{
+      const u = $('#username').value.trim();
+      const p = $('#password').value.trim();
+      if(u===USERS.username && p===USERS.password){
+        $('#loginCard').classList.add('hidden-el');
+        $('#appBody').classList.remove('hidden-el');
+        $('#userBadge').textContent = `เจ้าหน้าที่: ${u}`;
+      }else{
+        showModal('เข้าสู่ระบบไม่สำเร็จ','รหัสผ่านหรือชื่อผู้ใช้ไม่ถูกต้อง');
+      }
+    });
+
+    $('#closeModal').addEventListener('click', hideModal);
+
+    // ------- Tabs -------
+    $$('.tab').forEach(btn=>{
+      btn.addEventListener('click',()=>{
+        const t = btn.getAttribute('data-tab');
+        ['mood','pmhq','reports'].forEach(k=>$('#tab-'+k).classList.add('hidden-el'));
+        $('#tab-'+t).classList.remove('hidden-el');
+        $$('.tab').forEach(b=>b.classList.remove('ring-2','ring-blue-400'));
+        btn.classList.add('ring-2','ring-blue-400');
+        if(t==='reports') renderReports();
+      })
+    })
+
+    // ------- Mood UI -------
+    const moodButtons = $('#moodButtons');
+    let selectedMood = null; let moodContext = null; let moodPid=''; let moodName='';
+
+    MOODS.forEach(({key,emoji})=>{
+      const b = document.createElement('button');
+      b.className = 'mood-btn btn p-4 rounded-xl border border-slate-200 hover:bg-slate-50 flex items-center gap-3';
+      b.innerHTML = `<span class="text-2xl">${emoji}</span><span class="font-medium">${key}</span>`;
+      b.setAttribute('data-mood', key);
+      b.setAttribute('aria-pressed','false');
+      b.addEventListener('click',()=>{
+        selectedMood = key;
+        $$('.mood-btn').forEach(x=>{x.setAttribute('aria-pressed','false'); x.classList.remove('bg-blue-50','border-blue-300')});
+        b.setAttribute('aria-pressed','true'); b.classList.add('bg-blue-50','border-blue-300');
+        checkMoodReady();
+      })
+      moodButtons.appendChild(b);
+    })
+
+    $$('#tab-mood .option-chip').forEach(ch=>{
+      ch.addEventListener('click',()=>{
+        $$('#tab-mood .option-chip').forEach(x=>x.classList.remove('bg-blue-50','text-blue-700','border-blue-200'))
+        ch.classList.add('bg-blue-50','text-blue-700','border-blue-200');
+        moodContext = ch.getAttribute('data-mctx');
+        checkMoodReady();
+      })
+    })
+
+    $('#moodPid').addEventListener('change',()=>{
+      moodPid = $('#moodPid').value.trim();
+      const name = findInmate(moodPid);
+      if(name){ moodName = name; $('#moodName').value=name; }
+      else { moodName=''; $('#moodName').value='—'; showModal('ไม่พบข้อมูล','กรุณาตรวจสอบเลขประจำตัวผู้ต้องขัง'); }
+      checkMoodReady();
+    })
+
+    function checkMoodReady(){
+      $('#saveMood').disabled = !(moodPid && moodName && selectedMood && moodContext);
+    }
+
+    $('#saveMood').addEventListener('click',()=>{
+      const rec = { type:'mood', ts:Date.now(), pid:moodPid, name:moodName, mood:selectedMood, context:moodContext };
+      const all = storage.moods; all.push(rec); storage.moods = all;
+      showModal('บันทึกสำเร็จ',`บันทึกอารมณ์: ${selectedMood} (${moodContext}) ของ ${moodName}`);
+      // reset selections (keep pid)
+      selectedMood = null; $$('.mood-btn').forEach(x=>{x.setAttribute('aria-pressed','false'); x.classList.remove('bg-blue-50','border-blue-300')});
+      moodContext = null; $$('#tab-mood .option-chip').forEach(x=>x.classList.remove('bg-blue-50','text-blue-700','border-blue-200'))
+      renderReports();
+    })
+
+    // ------- PMHQ UI -------
+    let pmhqPid = ''; let pmhqName='';
+
+    $('#pmhqPid').addEventListener('change',()=>{
+      pmhqPid = $('#pmhqPid').value.trim();
+      const name = findInmate(pmhqPid);
+      if(name){ pmhqName = name; $('#pmhqName').value=name; }
+      else { pmhqName=''; $('#pmhqName').value='—'; showModal('ไม่พบข้อมูล','กรุณาตรวจสอบเลขประจำตัวผู้ต้องขัง'); }
+      updatePMHQScore();
+    })
+
+    // render questions
+    const form = $('#pmhqForm');
+    PMHQ_QUESTIONS.forEach((q,idx)=>{
+      const row = document.createElement('div');
+      row.className='p-4 rounded-xl border border-slate-200';
+      row.innerHTML = `
+        <div class="font-medium">${idx+1}. ${q}</div>
+        <div class="mt-3 flex flex-wrap gap-2 text-sm">
+          ${[0,1,2,3].map(v=>`<label class="pill px-3 py-2 bg-white hover:bg-slate-50 border cursor-pointer">
+            <input type="radio" name="q${idx}" value="${v}" class="mr-2">${['ไม่เลย','บางครั้ง','ค่อนข้างบ่อย','บ่อยมาก'][v]}
+          </label>`).join('')}
+        </div>`;
+      form.appendChild(row);
+    })
+
+    function getPMHQScore(){
+      let score = 0; let answered=0; const answers=[];
+      PMHQ_QUESTIONS.forEach((_,idx)=>{
+        const v = form.querySelector(`input[name=q${idx}]:checked`);
+        const val = v?Number(v.value):null; answers.push(val);
+        if(val!==null){ score+=val; answered++; }
+      });
+      return {score, answered, answers};
+    }
+
+    function updatePMHQScore(){
+      const {score, answered} = getPMHQScore();
+      const badge = $('#pmhqScoreBadge');
+      badge.textContent = `คะแนนรวม: ${score} (ตอบ ${answered}/24)`;
+    }
+
+    form.addEventListener('change', updatePMHQScore);
+
+    $('#submitPMHQ').addEventListener('click',()=>{
+      const {score, answered, answers} = getPMHQScore();
+      if(!(pmhqPid && pmhqName)) return showModal('กรุณากรอกข้อมูล','โปรดกรอกเลขประจำตัวให้ถูกต้องก่อน');
+      if(answered < PMHQ_QUESTIONS.length) return showModal('กรอกไม่ครบ','โปรดตอบให้ครบทั้ง 24 ข้อ');
+      const cls = classifyPMHQ(score);
+      const rec = { type:'pmhq', ts:Date.now(), pid:pmhqPid, name:pmhqName, score, answers, result:cls.label };
+      const all = storage.pmhq; all.push(rec); storage.pmhq = all;
+
+      const tips = selfCareTips().map(t=>`• ${t}`).join('\n');
+      showModal('ผลลัพธ์แบบประเมิน', `ชื่อ: ${pmhqName}\nคะแนนรวม: ${score}\nผล: ${cls.label}\n\nคำแนะนำส่งเสริมสุขภาพจิต:\n${tips}`);
+      renderReports();
+      // optional scroll to reports
+    })
+
+    // ------- Reports & mini-charts (CSS bars) -------
+    function renderReports(){
+      // stats
+      const moods = storage.moods.sort((a,b)=>b.ts-a.ts);
+      const pmhq = storage.pmhq.sort((a,b)=>b.ts-a.ts);
+      $('#statMoodCount').textContent = moods.length;
+      $('#statPMHQCount').textContent = pmhq.length;
+      const pos = pmhq.filter(x=>x.score>=29).length;
+      $('#statPMHQRate').textContent = pmhq.length? Math.round((pos*100)/pmhq.length)+"%":'0%';
+
+      // lists
+      const rm = $('#recentMood'); rm.innerHTML = '';
+      moods.slice(0,10).forEach(rec=>{
+        const el = document.createElement('div');
+        el.className='p-3 bg-white rounded-xl border text-slate-700 flex items-center justify-between';
+        el.innerHTML = `<div><div class="font-medium">${rec.name} <span class="text-slate-400">(${rec.pid})</span></div>
+                        <div class="text-xs text-slate-500">${rec.context} • ${fmtDate(rec.ts)}</div></div>
+                        <div class="text-base">${rec.mood}</div>`;
+        rm.appendChild(el);
+      })
+
+      const rp = $('#recentPMHQ'); rp.innerHTML='';
+      pmhq.slice(0,10).forEach(rec=>{
+        const el = document.createElement('div');
+        const cls = rec.score>=29? 'text-rose-700 bg-rose-50':'text-emerald-700 bg-emerald-50';
+        el.className='p-3 bg-white rounded-xl border text-slate-700 flex items-center justify-between';
+        el.innerHTML = `<div><div class="font-medium">${rec.name} <span class="text-slate-400">(${rec.pid})</span></div>
+                        <div class="text-xs text-slate-500">${fmtDate(rec.ts)}</div></div>
+                        <div class="pill px-3 py-1 ${cls}">${rec.score} • ${rec.result}</div>`;
+        rp.appendChild(el);
+      })
+
+      // charts
+      renderBar('#chartMood', countByMood(moods), 'ครั้ง');
+      renderBar('#chartPMHQ', bucketPMHQ(pmhq), 'คน');
+    }
+
+    function countByMood(moods){
+      const map = {}; MOODS.forEach(m=>map[m.key]=0);
+      moods.forEach(m=>{ map[m.mood] = (map[m.mood]||0)+1 });
+      return Object.entries(map).map(([label,value])=>({label,value}));
+    }
+
+    function bucketPMHQ(pmhq){
+      const buckets = [
+        {label:'0–10',min:0,max:10,count:0},
+        {label:'11–20',min:11,max:20,count:0},
+        {label:'21–28',min:21,max:28,count:0},
+        {label:'29–36',min:29,max:36,count:0},
+        {label:'37–48',min:37,max:48,count:0},
+        {label:'49–72',min:49,max:72,count:0},
+      ];
+      pmhq.forEach(r=>{
+        const b = buckets.find(b=>r.score>=b.min && r.score<=b.max); if(b) b.count++;
+      })
+      return buckets.map(b=>({label:b.label, value:b.count}))
+    }
+
+    function renderBar(selector, rows, unit){
+      const host = document.querySelector(selector);
+      host.innerHTML = '';
+      const max = Math.max(1, ...rows.map(r=>r.value));
+      rows.forEach(r=>{
+        const wrap = document.createElement('div'); wrap.className='grid grid-cols-5 gap-2 items-end';
+        const barBox = document.createElement('div'); barBox.className='col-span-5 h-40 flex items-end gap-2';
+        // bar
+        const bar = document.createElement('div');
+        const h = Math.round((r.value/max)*100);
+        bar.style.height = Math.max(4, h)+'%';
+        bar.className='flex-1 bg-gradient-to-t from-blue-200 to-blue-500 rounded-t-xl shadow-soft relative';
+        const tag = document.createElement('div'); tag.className='absolute -top-6 left-1/2 -translate-x-1/2 text-xs text-slate-700'; tag.textContent = r.value;
+        bar.appendChild(tag); barBox.appendChild(bar);
+        // label
+        const label = document.createElement('div'); label.className='text-xs text-center mt-2 text-slate-600'; label.textContent = r.label;
+        const item = document.createElement('div'); item.appendChild(barBox); item.appendChild(label);
+        host.appendChild(item);
+      })
+    }
+
+    // Clear data
+    $('#clearAll').addEventListener('click',()=>{
+      storage.clear(); renderReports(); showModal('ล้างข้อมูลแล้ว','ข้อมูลเดโม่ทั้งหมดถูกล้างออกจากเบราว์เซอร์นี้');
+    })
+
+    // Default: show Mood tab on login
+  </script>
+</body>
+</html>
